@@ -1,59 +1,41 @@
-# Project Overview
+# 🚀 Project Title 
 
-This project aims to provide comprehensive solutions for ...
+![GitHub repo size](https://img.shields.io/github/repo-size/m-sa1m/DSIS) ![GitHub contributors](https://img.shields.io/github/contributors/m-sa1m/DSIS) ![GitHub stars](https://img.shields.io/github/stars/m-sa1m/DSIS?style=social)  
 
-## Table of Contents
-- [Objectives](#objectives)
-- [Roadmap](#roadmap)
-- [Requirements](#requirements)
-- [Project Management](#project-management)
-- [Tech Stack](#tech-stack)
-- [Tools and Frameworks](#tools-and-frameworks)
-- [Installation Setup](#installation-setup)
-- [Contributing Guidelines](#contributing-guidelines)
-
-## Objectives
-- Objective 1: ...
-- Objective 2: ...
-
-## Roadmap
-The project roadmap consists of 5 phases:
-1. Phase 1: ...
-2. Phase 2: ...
-3. Phase 3: ... 
-4. Phase 4: ...
-5. Phase 5: ...
-
-## Requirements
-
-### Functional Requirements
-- Requirement 1: ...
-- Requirement 2: ...
-
-### Non-Functional Requirements
-- Requirement 1: ...
-- Requirement 2: ...
-
-## Project Management
-- Project Manager: ...
-- Team Members: ...
-
-## Tech Stack
-- Technology 1: [Link](http://example.com)
-- Technology 2: [Link](http://example.com)
-
-## Tools and Frameworks
-- Tool 1: [Official Link](http://example.com)
-- Tool 2: [Official Link](http://example.com)
-
-## Installation Setup
-Follow these steps to set up the project:
-1. Step 1: ...
-2. Step 2: ...
-
-## Contributing Guidelines
-We welcome contributions! Please follow these guidelines:
-- ...
+## 📚 Overview  
+Welcome to the **DSIS** project! This project aims to … (add project description here). 
 
 ---
-Last updated on 2026-04-18 14:51:17 UTC.
+
+## 📑 Table of Contents  
+- [Overview](#-overview)  
+- [Installation Instructions](#-installation-instructions)  
+- [Technology Stack](#-technology-stack)  
+- [Features](#-features)  
+- [Contributing](#-contributing)  
+
+---
+
+## 🔧 Installation Instructions  
+To install this project, follow these steps:  
+1. Clone the repo: `git clone https://github.com/m-sa1m/DSIS.git`  
+2. Install dependencies: `npm install`  
+3. Run the application: `npm start`  
+
+---
+
+## ⚒️ Technology Stack  
+- ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)  
+- ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)  
+
+---
+
+## ⭐ Features  
+- **Feature 1:** Explanation of feature 1 📌  
+- **Feature 2:** Explanation of feature 2 📌  
+- **Feature 3:** Explanation of feature 3 📌  
+
+---  
+
+## 🤝 Contributing  
+Contributions are welcome! Please see the [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
