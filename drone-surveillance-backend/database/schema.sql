@@ -161,3 +161,36 @@ CREATE TRIGGER trg_auto_generate_alert
 AFTER INSERT ON detected_objects
 FOR EACH ROW
 EXECUTE FUNCTION auto_generate_alert();
+
+-- ============================================================
+-- Views
+-- ============================================================
+CREATE OR REPLACE VIEW analyst_alert_view AS
+SELECT
+    a.alert_id,
+    a.severity,
+    a.alert_status,
+    a.generated_at,
+    d.object_type,
+    d.threat_level,
+    sz.zone_name,
+    dr.drone_name
+FROM alerts a
+JOIN detected_objects d ON a.detection_id = d.detection_id
+JOIN flight_logs fl ON d.log_id = fl.log_id
+JOIN flight_missions fm ON fl.mission_id = fm.mission_id
+JOIN drones dr ON fm.drone_id = dr.drone_id
+JOIN surveillance_zones sz ON fm.zone_id = sz.zone_id;
+
+CREATE OR REPLACE VIEW operator_mission_view AS
+SELECT
+    fm.mission_id,
+    dr.drone_name,
+    sz.zone_name,
+    u.full_name AS operator_name,
+    fm.scheduled_time,
+    fm.mission_status
+FROM flight_missions fm
+JOIN drones dr ON fm.drone_id = dr.drone_id
+JOIN surveillance_zones sz ON fm.zone_id = sz.zone_id
+LEFT JOIN users u ON fm.operator_id = u.user_id;
