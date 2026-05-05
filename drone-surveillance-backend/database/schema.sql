@@ -96,3 +96,14 @@ CREATE TABLE detected_objects (
     coordinates_lng DECIMAL(9,6),
     description TEXT
 );
+
+-- 8. alerts
+CREATE TABLE alerts (
+    alert_id SERIAL PRIMARY KEY,
+    detection_id INTEGER REFERENCES detected_objects(detection_id) ON DELETE CASCADE,
+    alert_status VARCHAR(30) CHECK (alert_status IN ('New', 'Acknowledged', 'Resolved')) DEFAULT 'New',
+    severity VARCHAR(20) CHECK (severity IN ('Low', 'Medium', 'High', 'Critical')) NOT NULL,
+    generated_at TIMESTAMP DEFAULT NOW(),
+    resolved_at TIMESTAMP,
+    resolved_by INTEGER REFERENCES users(user_id) ON DELETE SET NULL
+);
