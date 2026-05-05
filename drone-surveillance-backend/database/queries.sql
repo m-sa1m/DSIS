@@ -65,3 +65,85 @@ LEFT JOIN flight_logs fl ON fm.mission_id = fl.mission_id
 GROUP BY d.drone_id, d.drone_name
 ORDER BY total_missions DESC;
 
+-- ============================================================
+-- Q5: Get all unresolved incidents with the triggering alert and zone
+-- ============================================================
+SELECT
+    ir.incident_id,
+    ir.title,
+    ir.incident_status,
+    ir.created_at,
+    a.severity,
+    a.alert_status,
+    sz.zone_name
+FROM incident_reports ir
+JOIN alerts a ON ir.alert_id = a.alert_id
+JOIN detected_objects do ON a.detection_id = do.detection_id
+JOIN flight_logs fl ON do.log_id = fl.log_id
+JOIN flight_missions fm ON fl.mission_id = fm.mission_id
+JOIN surveillance_zones sz ON fm.zone_id = sz.zone_id
+WHERE ir.incident_status NOT IN ('Resolved', 'Archived')
+ORDER BY ir.created_at DESC;
+
+-- ============================================================
+-- Q6: Get all zones ordered by number of HIGH detections descending (risk ranking)
+-- ============================================================
+SELECT
+    sz.zone_id,
+    sz.zone_name,
+    sz.risk_level,
+    COUNT(do.detection_id) AS high_detection_count
+FROM surveillance_zones sz
+LEFT JOIN flight_missions fm ON sz.zone_id = fm.zone_id
+LEFT JOIN flight_logs fl ON fm.mission_id = fl.mission_id
+LEFT JOIN detected_objects do ON fl.log_id = do.log_id AND do.threat_level = 'High'
+GROUP BY sz.zone_id, sz.zone_name, sz.risk_level
+ORDER BY high_detection_count DESC;
+
+-- ============================================================
+-- Q7: Get operator performance — number of missions completed per operator
+-- ============================================================
+SELECT
+    u.user_id,
+    u.full_name,
+    COUNT(fm.mission_id) AS completed_missions
+FROM users u
+JOIN flight_missions fm ON u.user_id = fm.operator_id
+WHERE fm.mission_status = 'Completed'
+GROUP BY u.user_id, u.full_name
+ORDER BY completed_missions DESC;
+
+-- ============================================================
+-- Q8: Full incident timeline: incident → alert → detection → flight log → mission → drone → zone
+-- ============================================================
+SELECT
+    ir.incident_id,
+    ir.title AS incident_title,
+    ir.incident_status,
+    a.alert_id,
+    a.severity,
+    a.alert_status,
+    do.detection_id,
+    do.object_type,
+    do.threat_level,
+    do.detected_at,
+    fl.log_id,
+    fl.start_time AS flight_start,
+    fl.end_time AS flight_end,
+    fl.duration_minutes,
+    fm.mission_id,
+    fm.mission_status,
+    fm.scheduled_time,
+    dr.drone_name,
+    dr.model AS drone_model,
+    sz.zone_name,
+    sz.risk_level AS zone_risk
+FROM incident_reports ir
+JOIN alerts a ON ir.alert_id = a.alert_id
+JOIN detected_objects do ON a.detection_id = do.detection_id
+JOIN flight_logs fl ON do.log_id = fl.log_id
+JOIN flight_missions fm ON fl.mission_id = fm.mission_id
+JOIN drones dr ON fm.drone_id = dr.drone_id
+JOIN surveillance_zones sz ON fm.zone_id = sz.zone_id
+ORDER BY ir.created_at DESC;
+
