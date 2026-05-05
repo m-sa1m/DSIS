@@ -119,3 +119,14 @@ CREATE TABLE incident_reports (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- 10. audit_log
+CREATE TABLE audit_log (
+    audit_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
+    action VARCHAR(50) NOT NULL,
+    table_name VARCHAR(100) NOT NULL,
+    record_id INTEGER,
+    description TEXT,
+    performed_at TIMESTAMP DEFAULT NOW()
+);
