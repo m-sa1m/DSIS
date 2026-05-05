@@ -130,3 +130,15 @@ CREATE TABLE audit_log (
     description TEXT,
     performed_at TIMESTAMP DEFAULT NOW()
 );
+
+-- ============================================================
+-- Indexes
+-- ============================================================
+CREATE INDEX idx_flight_logs_mission ON flight_logs(mission_id);
+CREATE INDEX idx_detected_objects_log ON detected_objects(log_id);
+CREATE INDEX idx_detected_objects_threat ON detected_objects(threat_level);
+CREATE INDEX idx_alerts_status ON alerts(alert_status);
+CREATE INDEX idx_audit_log_user ON audit_log(user_id);
+CREATE INDEX idx_flight_missions_drone ON flight_missions(drone_id);
+CREATE INDEX idx_flight_missions_zone ON flight_missions(zone_id);
+
