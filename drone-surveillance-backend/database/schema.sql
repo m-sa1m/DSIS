@@ -48,3 +48,13 @@ CREATE TABLE surveillance_zones (
     coordinates_lat DECIMAL(9,6),
     coordinates_lng DECIMAL(9,6)
 );
+
+-- 3. drones
+CREATE TABLE drones (
+    drone_id SERIAL PRIMARY KEY,
+    drone_name VARCHAR(100) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    status VARCHAR(30) CHECK (status IN ('Active', 'Inactive', 'Under Maintenance')) DEFAULT 'Active',
+    zone_id INTEGER REFERENCES surveillance_zones(zone_id) ON DELETE SET NULL,
+    registered_at TIMESTAMP DEFAULT NOW()
+);
