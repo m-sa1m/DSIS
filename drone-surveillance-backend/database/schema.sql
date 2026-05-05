@@ -70,3 +70,17 @@ CREATE TABLE flight_missions (
     notes TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- 6. flight_logs
+CREATE TABLE flight_logs (
+    log_id SERIAL PRIMARY KEY,
+    mission_id INTEGER REFERENCES flight_missions(mission_id) ON DELETE CASCADE,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP,
+    duration_minutes INTEGER,
+    start_lat DECIMAL(9,6),
+    start_lng DECIMAL(9,6),
+    end_lat DECIMAL(9,6),
+    end_lng DECIMAL(9,6),
+    logged_at TIMESTAMP DEFAULT NOW()
+);
