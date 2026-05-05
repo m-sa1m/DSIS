@@ -205,3 +205,102 @@ WHERE d.drone_id NOT IN (
     SELECT DISTINCT fm.drone_id
     FROM flight_missions fm
 );
+
+-- ============================================================
+-- Q12: Subquery — Find zones where average threat level of detections is High
+-- ============================================================
+-- Mapping: High=3, Medium=2, Low=1. Average >= 2.5 means predominantly High.
+SELECT
+    sz.zone_id,
+    sz.zone_name,
+    sub.avg_threat
+FROM surveillance_zones sz
+JOIN (
+    SELECT
+        fm.zone_id,
+        AVG(
+            CASE do.threat_level
+                WHEN 'High' THEN 3
+                WHEN 'Medium' THEN 2
+                WHEN 'Low' THEN 1
+            END
+        ) AS avg_threat
+    FROM detected_objects do
+    JOIN flight_logs fl ON do.log_id = fl.log_id
+    JOIN flight_missions fm ON fl.mission_id = fm.mission_id
+    GROUP BY fm.zone_id
+    HAVING AVG(
+        CASE do.threat_level
+            WHEN 'High' THEN 3
+            WHEN 'Medium' THEN 2
+            WHEN 'Low' THEN 1
+        END
+    ) >= 2.5
+) sub ON sz.zone_id = sub.zone_id
+ORDER BY sub.avg_threat DESC;
+
+-- ============================================================
+-- Q13: Transaction example — Insert detection, trigger fires alert, then open incident
+-- ============================================================
+BEGIN;
+
+-- Step 1: Insert a new High-threat detection (trigger auto-generates a Critical alert)
+INSERT INTO detected_objects (log_id, object_type, threat_level, detected_at, coordinates_lat, coordinates_lng, description)
+VALUES (1, 'Suspicious Drone', 'High', NOW(), 34.089200, 72.621500, 'Unregistered drone spotted above Main Gate')
+RETURNING detection_id;
+
+-- Step 2: Get the auto-generated alert for this detection
+-- (The trigger created it; we retrieve it to link the incident)
+-- In application code, use the detection_id from step 1:
+-- SELECT alert_id FROM alerts WHERE detection_id = <returned_detection_id>;
+
+-- Step 3: Create an incident linked to the alert
+INSERT INTO incident_reports (alert_id, reported_by, title, description, incident_status)
+SELECT
+    a.alert_id,
+    1,
+    'Unregistered Drone at Main Gate',
+    'An unregistered drone was spotted flying above the Main Gate area. Security team alerted.',
+    'Open'
+FROM alerts a
+WHERE a.detection_id = (SELECT MAX(detection_id) FROM detected_objects WHERE object_type = 'Suspicious Drone');
+
+COMMIT;
+-- If any step fails, use: ROLLBACK;
+
+-- ============================================================
+-- Q14: BCNF Demonstration — Show functional dependencies are satisfied
+-- ============================================================
+-- In our schema, the roles table is in BCNF because:
+-- role_id → role_name, description (role_id is the sole candidate key)
+-- role_name → role_id, description (role_name is also a candidate key, enforced by UNIQUE)
+--
+-- The users table satisfies BCNF because:
+-- user_id → full_name, email, password_hash, role_id, is_active, created_at
+-- email → user_id, full_name, ... (email is a candidate key, enforced by UNIQUE)
+--
+-- We demonstrate that the role → permissions relationship has no partial or
+-- transitive dependencies by showing that each role maps to a consistent
+-- set of user attributes:
+
+SELECT
+    r.role_id,
+    r.role_name,
+    r.description AS role_description,
+    COUNT(u.user_id) AS user_count,
+    ARRAY_AGG(u.full_name ORDER BY u.full_name) AS users_in_role
+FROM roles r
+LEFT JOIN users u ON r.role_id = u.role_id
+GROUP BY r.role_id, r.role_name, r.description
+ORDER BY r.role_id;
+
+-- Verify no user has ambiguous role assignment (each user_id determines exactly one role_id)
+SELECT
+    u.user_id,
+    u.full_name,
+    u.email,
+    r.role_name,
+    r.description AS role_permissions
+FROM users u
+JOIN roles r ON u.role_id = r.role_id
+ORDER BY u.user_id;
