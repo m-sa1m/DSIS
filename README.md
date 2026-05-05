@@ -215,6 +215,14 @@ All accounts use password: **`password123`**
 
 ## Author
 
-**m-sa1m** — GIK Institute of Engineering Sciences and Technology
+**Muhammad Saim** (2024453)  
+u2024453@giki.edu.pk  
+GIK Institute of Engineering Sciences and Technology  
 
 CS-232 DBMS — Spring 2026
+
+---
+
+## Acknowledgement
+
+Special thanks to **Sir Nabi** for his excellent contributions in teaching this course and for providing the guidance that made this project possible.
