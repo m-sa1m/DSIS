@@ -147,3 +147,61 @@ JOIN drones dr ON fm.drone_id = dr.drone_id
 JOIN surveillance_zones sz ON fm.zone_id = sz.zone_id
 ORDER BY ir.created_at DESC;
 
+-- ============================================================
+-- Q9: Query performance comparison — WITH and WITHOUT index
+-- ============================================================
+
+-- 9a: Query USING the idx_detected_objects_threat index (default behavior)
+-- The index idx_detected_objects_threat on detected_objects(threat_level)
+-- allows PostgreSQL to perform an Index Scan instead of a Sequential Scan
+-- when filtering by threat_level.
+EXPLAIN ANALYZE
+SELECT detection_id, object_type, threat_level, detected_at
+FROM detected_objects
+WHERE threat_level = 'High';
+
+-- 9b: Query WITHOUT using the index (force Sequential Scan)
+-- We temporarily disable index scans to compare performance.
+-- In production this would show slower execution on large datasets.
+SET enable_indexscan = OFF;
+SET enable_bitmapscan = OFF;
+
+EXPLAIN ANALYZE
+SELECT detection_id, object_type, threat_level, detected_at
+FROM detected_objects
+WHERE threat_level = 'High';
+
+-- Re-enable index scans
+SET enable_indexscan = ON;
+SET enable_bitmapscan = ON;
+
+-- ============================================================
+-- Q10: Get audit log for a specific user — all actions in the last 7 days
+-- ============================================================
+SELECT
+    al.audit_id,
+    al.action,
+    al.table_name,
+    al.record_id,
+    al.description,
+    al.performed_at,
+    u.full_name
+FROM audit_log al
+JOIN users u ON al.user_id = u.user_id
+WHERE al.user_id = 1
+  AND al.performed_at >= NOW() - INTERVAL '7 days'
+ORDER BY al.performed_at DESC;
+
+-- ============================================================
+-- Q11: Subquery — Find drones that have never been assigned a mission
+-- ============================================================
+SELECT
+    d.drone_id,
+    d.drone_name,
+    d.model,
+    d.status
+FROM drones d
+WHERE d.drone_id NOT IN (
+    SELECT DISTINCT fm.drone_id
+    FROM flight_missions fm
+);
