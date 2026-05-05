@@ -38,3 +38,13 @@ CREATE TABLE users (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- 4. surveillance_zones (created before drones due to FK dependency)
+CREATE TABLE surveillance_zones (
+    zone_id SERIAL PRIMARY KEY,
+    zone_name VARCHAR(100) NOT NULL,
+    location_description TEXT,
+    risk_level VARCHAR(20) CHECK (risk_level IN ('Low', 'Medium', 'High')) DEFAULT 'Low',
+    coordinates_lat DECIMAL(9,6),
+    coordinates_lng DECIMAL(9,6)
+);
