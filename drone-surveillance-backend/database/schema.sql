@@ -58,3 +58,15 @@ CREATE TABLE drones (
     zone_id INTEGER REFERENCES surveillance_zones(zone_id) ON DELETE SET NULL,
     registered_at TIMESTAMP DEFAULT NOW()
 );
+
+-- 5. flight_missions
+CREATE TABLE flight_missions (
+    mission_id SERIAL PRIMARY KEY,
+    drone_id INTEGER REFERENCES drones(drone_id) ON DELETE CASCADE,
+    zone_id INTEGER REFERENCES surveillance_zones(zone_id) ON DELETE SET NULL,
+    operator_id INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
+    scheduled_time TIMESTAMP NOT NULL,
+    mission_status VARCHAR(30) CHECK (mission_status IN ('Scheduled', 'In Progress', 'Completed', 'Aborted')) DEFAULT 'Scheduled',
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
