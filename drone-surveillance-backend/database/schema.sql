@@ -107,3 +107,15 @@ CREATE TABLE alerts (
     resolved_at TIMESTAMP,
     resolved_by INTEGER REFERENCES users(user_id) ON DELETE SET NULL
 );
+
+-- 9. incident_reports
+CREATE TABLE incident_reports (
+    incident_id SERIAL PRIMARY KEY,
+    alert_id INTEGER REFERENCES alerts(alert_id) ON DELETE CASCADE,
+    reported_by INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    incident_status VARCHAR(30) CHECK (incident_status IN ('Open', 'Under Review', 'Resolved', 'Archived')) DEFAULT 'Open',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
