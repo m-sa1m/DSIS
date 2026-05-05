@@ -84,3 +84,15 @@ CREATE TABLE flight_logs (
     end_lng DECIMAL(9,6),
     logged_at TIMESTAMP DEFAULT NOW()
 );
+
+-- 7. detected_objects
+CREATE TABLE detected_objects (
+    detection_id SERIAL PRIMARY KEY,
+    log_id INTEGER REFERENCES flight_logs(log_id) ON DELETE CASCADE,
+    object_type VARCHAR(100) NOT NULL,
+    threat_level VARCHAR(20) CHECK (threat_level IN ('Low', 'Medium', 'High')) NOT NULL,
+    detected_at TIMESTAMP DEFAULT NOW(),
+    coordinates_lat DECIMAL(9,6),
+    coordinates_lng DECIMAL(9,6),
+    description TEXT
+);
