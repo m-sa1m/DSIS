@@ -194,3 +194,56 @@ FROM flight_missions fm
 JOIN drones dr ON fm.drone_id = dr.drone_id
 JOIN surveillance_zones sz ON fm.zone_id = sz.zone_id
 LEFT JOIN users u ON fm.operator_id = u.user_id;
+
+
+-- ============================================================
+-- Stored Procedures
+-- ============================================================
+CREATE OR REPLACE PROCEDURE update_incident_status(
+    p_incident_id INT,
+    p_new_status VARCHAR,
+    p_user_id INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE incident_reports
+    SET incident_status = p_new_status,
+        updated_at = NOW()
+    WHERE incident_id = p_incident_id;
+
+    INSERT INTO audit_log (user_id, action, table_name, record_id, description, performed_at)
+    VALUES (
+        p_user_id,
+        'UPDATE_STATUS',
+        'incident_reports',
+        p_incident_id,
+        'Incident status changed to ' || p_new_status,
+        NOW()
+    );
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION get_drone_utilization_report()
+RETURNS TABLE (
+    drone_name VARCHAR,
+    total_missions BIGINT,
+    total_flight_minutes BIGINT,
+    zones_covered BIGINT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        d.drone_name,
+        COUNT(DISTINCT fm.mission_id) AS total_missions,
+        COALESCE(SUM(fl.duration_minutes), 0) AS total_flight_minutes,
+        COUNT(DISTINCT fm.zone_id) AS zones_covered
+    FROM drones d
+    LEFT JOIN flight_missions fm ON d.drone_id = fm.drone_id
+    LEFT JOIN flight_logs fl ON fm.mission_id = fl.mission_id
+    GROUP BY d.drone_id, d.drone_name
+    ORDER BY total_missions DESC;
+END;
+$$;
