@@ -142,3 +142,22 @@ CREATE INDEX idx_audit_log_user ON audit_log(user_id);
 CREATE INDEX idx_flight_missions_drone ON flight_missions(drone_id);
 CREATE INDEX idx_flight_missions_zone ON flight_missions(zone_id);
 
+
+-- ============================================================
+-- Trigger: auto-generate alert for High threat detections
+-- ============================================================
+CREATE OR REPLACE FUNCTION auto_generate_alert()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.threat_level = 'High' THEN
+        INSERT INTO alerts (detection_id, alert_status, severity, generated_at)
+        VALUES (NEW.detection_id, 'New', 'Critical', NOW());
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_auto_generate_alert
+AFTER INSERT ON detected_objects
+FOR EACH ROW
+EXECUTE FUNCTION auto_generate_alert();
