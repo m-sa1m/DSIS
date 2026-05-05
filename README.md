@@ -225,4 +225,4 @@ CS-232 DBMS — Spring 2026
 
 ## Acknowledgement
 
-Special thanks to **Sir Nabi** for his excellent contributions in teaching this course and for providing the guidance that made this project possible.
+Special thanks to **Sir Said Nabi** for his excellent contributions in teaching this course and for providing the guidance that made this project possible.
