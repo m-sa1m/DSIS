@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Surveillance & Intelligence System — CS-232 DBMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            padding: 60px 80px;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-number {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .nav-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 40px;
+            font-size: 13px;
+            color: #444;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 34px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 30px;
+            letter-spacing: -0.3px;
+        }
+
+        h3 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #4a90d9;
+            margin-bottom: 16px;
+            margin-top: 24px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #888;
+            margin-bottom: 40px;
+        }
+
+        .meta {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .meta span {
+            color: #aaa;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 10px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 18px;
+            line-height: 1.5;
+            color: #ccc;
+        }
+
+        ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #4a90d9;
+            font-size: 16px;
+        }
+
+        ul li strong {
+            color: #ffffff;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 24px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .card ul li {
+            font-size: 16px;
+            padding: 7px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 16px;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #1a1a1a;
+            color: #4a90d9;
+            font-weight: 600;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #1a1a1a;
+            color: #bbb;
+        }
+
+        tr:hover td {
+            background: #111;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .badge-blue { background: rgba(74,144,217,0.15); color: #4a90d9; }
+        .badge-green { background: rgba(52,211,153,0.15); color: #34d399; }
+        .badge-amber { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .badge-red { background: rgba(248,113,113,0.15); color: #f87171; }
+
+        .title-slide {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-slide h1 {
+            font-size: 52px;
+            margin-bottom: 16px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 22px;
+            margin-bottom: 50px;
+        }
+
+        .accent {
+            color: #4a90d9;
+        }
+
+        .schema-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .schema-flow .entity {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .schema-flow .arrow {
+            color: #4a90d9;
+            font-size: 18px;
+        }
+
+        .highlight-box {
+            background: #111;
+            border-left: 3px solid #4a90d9;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            color: #bbb;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .tech-item {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .tech-item .label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .tech-item .value {
+            font-size: 17px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: #4a90d9;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress"></div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide title-slide active">
+        <h1>Drone Surveillance &<br>Intelligence System</h1>
+        <p class="subtitle">CS-232 Database Management Systems — Semester Project</p>
+        <div class="meta">
+            <span>Muhammad Saim</span> &nbsp;|&nbsp; 2024453 &nbsp;|&nbsp; CYS<br>
+            GIK Institute of Engineering Sciences and Technology<br><br>
+            Instructor: <span>Sir Nabi</span>
+        </div>
+    </div>
+
+    <!-- Slide 2: Project Overview -->
+    <div class="slide">
+        <h2>Project Overview</h2>
+        <ul>
+            <li>A <strong>relational database-centric</strong> platform for drone-based campus surveillance</li>
+            <li>Manages <strong>drone fleet, flight missions, threat detections, alerts, and incidents</strong></li>
+            <li>Designed for GIKI campus — 7 surveillance zones with real GPS coordinates</li>
+            <li>Demonstrates all CS-232 course concepts in a single integrated system</li>
+        </ul>
+
+        <h3>Course Concepts Covered</h3>
+        <div class="two-col">
+            <ul>
+                <li>ER Modeling (10 entities)</li>
+                <li>Normalization (1NF → BCNF)</li>
+                <li>DDL with constraints (PK, FK, CHECK, UNIQUE)</li>
+                <li>Complex JOINs and subqueries</li>
+                <li>Indexing and query optimization</li>
+            </ul>
+            <ul>
+                <li>Triggers (auto alert generation)</li>
+                <li>Stored Procedures</li>
+                <li>Views (role-based)</li>
+                <li>Transaction management</li>
+                <li>Role-Based Access Control</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 3: Tech Stack -->
+    <div class="slide">
+        <h2>Technology Stack</h2>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="label">Database</div>
+                <div class="value">PostgreSQL 18</div>
+            </div>
+            <div class="tech-item">
+                <div class="label">Backend</div>
+                <div class="value">Node.js + Express</div>
+            </div>
+            <div class="tech-item">
+                <div class="label">Frontend</div>
+                <div class="value">React.js + Vite</div>
+            </div>
+            <div class="tech-item">
+                <div class="label">Styling</div>
+                <div class="value">Tailwind CSS</div>
+            </div>
+            <div class="tech-item">
+                <div class="label">Authentication</div>
+                <div class="value">JWT + bcrypt</div>
+            </div>
+            <div class="tech-item">
+                <div class="label">Validation</div>
+                <div class="value">Zod</div>
+            </div>
+            <div class="tech-item">
+                <div class="label">Charts</div>
+                <div class="value">Recharts</div>
+            </div>
+            <div class="tech-item">
+                <div class="label">Version Control</div>
+                <div class="value">Git + GitHub</div>
+            </div>
+        </div>
+
+        <h3>Architecture</h3>
+        <div class="highlight-box">
+            <strong>Frontend</strong> (port 5173) → proxies API calls → <strong>Backend</strong> (port 5000) → queries → <strong>PostgreSQL</strong> database
+        </div>
+    </div>
+
+    <!-- Slide 4: Database Schema -->
+    <div class="slide">
+        <h2>Database Schema — 10 Tables</h2>
+        <table>
+            <tr><th>Entity</th><th>Purpose</th><th>Key Relationships</th></tr>
+            <tr><td><strong>roles</strong></td><td>Admin, Operator, Analyst definitions</td><td>Referenced by users</td></tr>
+            <tr><td><strong>users</strong></td><td>System accounts with hashed passwords</td><td>FK → roles</td></tr>
+            <tr><td><strong>surveillance_zones</strong></td><td>GIKI campus areas with GPS</td><td>Referenced by drones, missions</td></tr>
+            <tr><td><strong>drones</strong></td><td>Fleet registry with status</td><td>FK → surveillance_zones</td></tr>
+            <tr><td><strong>flight_missions</strong></td><td>Scheduled patrol operations</td><td>FK → drones, zones, users</td></tr>
+            <tr><td><strong>flight_logs</strong></td><td>Actual flight telemetry</td><td>FK → flight_missions</td></tr>
+            <tr><td><strong>detected_objects</strong></td><td>Threat detections with coordinates</td><td>FK → flight_logs</td></tr>
+            <tr><td><strong>alerts</strong></td><td>Notifications from detections</td><td>FK → detected_objects, users</td></tr>
+            <tr><td><strong>incident_reports</strong></td><td>Escalated security incidents</td><td>FK → alerts, users</td></tr>
+            <tr><td><strong>audit_log</strong></td><td>User activity tracking</td><td>FK → users</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 5: Data Flow -->
+    <div class="slide">
+        <h2>Data Flow — Detection to Incident</h2>
+        <div class="schema-flow">
+            <div class="entity">Drone</div>
+            <div class="arrow">→</div>
+            <div class="entity">Mission</div>
+            <div class="arrow">→</div>
+            <div class="entity">Flight Log</div>
+            <div class="arrow">→</div>
+            <div class="entity">Detection</div>
+            <div class="arrow">→</div>
+            <div class="entity" style="border-color: #f87171;">Alert (Trigger)</div>
+            <div class="arrow">→</div>
+            <div class="entity">Incident</div>
+        </div>
+
+        <h3>Trigger: auto_generate_alert()</h3>
+        <div class="highlight-box">
+            When a <strong>detected_object</strong> is inserted with <code style="color:#f87171;">threat_level = 'High'</code>, the trigger automatically creates an <strong>alert</strong> with <code style="color:#f87171;">severity = 'Critical'</code> and <code style="color:#4a90d9;">status = 'New'</code>.
+        </div>
+
+        <h3>Stored Procedures</h3>
+        <ul>
+            <li><strong>update_incident_status()</strong> — Updates incident status + logs action to audit_log atomically</li>
+            <li><strong>get_drone_utilization_report()</strong> — Returns missions, flight minutes, and zones covered per drone</li>
+        </ul>
+
+        <h3>Views</h3>
+        <ul>
+            <li><strong>analyst_alert_view</strong> — Joins alerts → detections → logs → missions → drones → zones</li>
+            <li><strong>operator_mission_view</strong> — Joins missions → drones → zones → users</li>
+        </ul>
+    </div>
+
+    <!-- Slide 6: Indexing & Performance -->
+    <div class="slide">
+        <h2>Indexing & Query Optimization</h2>
+        <h3>7 Performance Indexes</h3>
+        <table>
+            <tr><th>Index</th><th>Table</th><th>Column</th><th>Purpose</th></tr>
+            <tr><td>idx_flight_logs_mission</td><td>flight_logs</td><td>mission_id</td><td>Fast log lookup by mission</td></tr>
+            <tr><td>idx_detected_objects_log</td><td>detected_objects</td><td>log_id</td><td>Fast detection lookup by log</td></tr>
+            <tr><td>idx_detected_objects_threat</td><td>detected_objects</td><td>threat_level</td><td>Filter by threat severity</td></tr>
+            <tr><td>idx_alerts_status</td><td>alerts</td><td>alert_status</td><td>Filter alerts by status</td></tr>
+            <tr><td>idx_audit_log_user</td><td>audit_log</td><td>user_id</td><td>User activity lookup</td></tr>
+            <tr><td>idx_flight_missions_drone</td><td>flight_missions</td><td>drone_id</td><td>Missions by drone</td></tr>
+            <tr><td>idx_flight_missions_zone</td><td>flight_missions</td><td>zone_id</td><td>Missions by zone</td></tr>
+        </table>
+
+        <h3>Performance Comparison (EXPLAIN ANALYZE)</h3>
+        <div class="highlight-box">
+            Query on <code>threat_level = 'High'</code>: <strong>Index Scan</strong> vs <strong>Sequential Scan</strong> — documented with execution time comparison in queries.sql (Q9).
+        </div>
+    </div>
+
+    <!-- Slide 7: RBAC & Security -->
+    <div class="slide">
+        <h2>Role-Based Access Control</h2>
+        <div class="two-col">
+            <div class="card">
+                <h3>Three Roles</h3>
+                <table>
+                    <tr><th>Role</th><th>Access Level</th></tr>
+                    <tr><td><span class="badge badge-red">Admin</span></td><td>Full CRUD on all resources + audit</td></tr>
+                    <tr><td><span class="badge badge-blue">Operator</span></td><td>Drones, missions, logs, detections</td></tr>
+                    <tr><td><span class="badge badge-green">Analyst</span></td><td>Read-only: alerts, incidents, reports</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Security Measures</h3>
+                <ul>
+                    <li>Passwords hashed with <strong>bcrypt</strong> (10 salt rounds)</li>
+                    <li>JWT tokens with 7-day expiry</li>
+                    <li>RBAC middleware checks role on every request</li>
+                    <li>Helmet.js for HTTP security headers</li>
+                    <li>Zod validation on all request bodies</li>
+                    <li>Audit trail for all admin actions</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Implementation</h3>
+        <div class="highlight-box">
+            Backend: <code>auth.js</code> middleware verifies JWT → <code>rbac.js</code> middleware checks <code>role_name</code> against allowed roles array → Controller executes or returns 403.
+        </div>
+    </div>
+
+    <!-- Slide 8: SQL Queries -->
+    <div class="slide">
+        <h2>SQL Queries — 14 Named Queries</h2>
+        <div class="two-col">
+            <div class="card">
+                <h3>Core Queries</h3>
+                <ul>
+                    <li>Active drones with zone info</li>
+                    <li>High threats in last 30 days</li>
+                    <li>Monthly alert count by severity</li>
+                    <li>Drone utilization report</li>
+                    <li>Unresolved incidents with zone</li>
+                    <li>Risk-ranked zones by detections</li>
+                    <li>Operator performance stats</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Advanced Queries</h3>
+                <ul>
+                    <li>Full incident timeline (6-table JOIN)</li>
+                    <li>Index performance comparison</li>
+                    <li>Audit log for specific user</li>
+                    <li>Subquery: drones with no missions</li>
+                    <li>Subquery: zones with avg High threat</li>
+                    <li>Transaction: detection → alert → incident</li>
+                    <li>BCNF demonstration query</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Transaction Example</h3>
+        <div class="highlight-box">
+            <code>BEGIN</code> → Insert detection → Trigger fires (creates alert) → Insert incident → <code>COMMIT</code><br>
+            On failure: <code>ROLLBACK</code> — ensures atomic consistency.
+        </div>
+    </div>
+
+    <!-- Slide 9: Frontend & UI -->
+    <div class="slide">
+        <h2>Frontend — Role-Based Dashboards</h2>
+        <div class="two-col">
+            <div>
+                <h3>Admin Dashboard</h3>
+                <ul>
+                    <li>Summary cards: active drones, missions, incidents, alerts</li>
+                    <li>Alert trends bar chart (by severity)</li>
+                    <li>Drone utilization bar chart</li>
+                    <li>User management with CRUD</li>
+                    <li>Drone and zone management</li>
+                    <li>Audit log viewer with user filter</li>
+                </ul>
+
+                <h3>Operator Pages</h3>
+                <ul>
+                    <li>Mission creation and management</li>
+                    <li>Drone status updates</li>
+                    <li>Detection logging with coordinates</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Analyst Pages</h3>
+                <ul>
+                    <li>Alert table with status filter tabs</li>
+                    <li>Incident lifecycle management</li>
+                    <li>Reports: utilization, trends, risk zones</li>
+                </ul>
+
+                <h3>UI Design Principles</h3>
+                <ul>
+                    <li>Dark theme — muted professional aesthetic</li>
+                    <li>GPS coordinates link to Google Maps</li>
+                    <li>Color-coded badges for status/severity</li>
+                    <li>Responsive tables with inline actions</li>
+                    <li>Modal forms with frontend validation</li>
+                    <li>Protected routes — redirect on unauthorized</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Normalization -->
+    <div class="slide">
+        <h2>Normalization — 1NF to BCNF</h2>
+        <div class="two-col">
+            <div class="card">
+                <h3>1NF</h3>
+                <ul>
+                    <li>All attributes are atomic (no arrays/nested data)</li>
+                    <li>Each table has a primary key</li>
+                    <li>No repeating groups</li>
+                </ul>
+
+                <h3>2NF</h3>
+                <ul>
+                    <li>All non-key attributes fully depend on the entire primary key</li>
+                    <li>No partial dependencies (all PKs are single-column SERIAL)</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>3NF</h3>
+                <ul>
+                    <li>No transitive dependencies</li>
+                    <li>Example: user role info stored in separate <code>roles</code> table, not in <code>users</code></li>
+                </ul>
+
+                <h3>BCNF</h3>
+                <ul>
+                    <li>Every determinant is a candidate key</li>
+                    <li><code>roles</code>: role_id → role_name (PK) and role_name → role_id (UNIQUE)</li>
+                    <li><code>users</code>: user_id → all attrs, email → all attrs (UNIQUE)</li>
+                    <li>Documented in queries.sql (Q14)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Testing & Results -->
+    <div class="slide">
+        <h2>Testing & Results</h2>
+        <div class="two-col">
+            <div class="card">
+                <h3>What Was Tested</h3>
+                <ul>
+                    <li>All 10 tables created with constraints</li>
+                    <li>Trigger fires correctly on High threats</li>
+                    <li>Stored procedures execute as expected</li>
+                    <li>RBAC blocks unauthorized access (403)</li>
+                    <li>JWT auth rejects invalid tokens (401)</li>
+                    <li>All CRUD operations work end-to-end</li>
+                    <li>Index vs sequential scan comparison</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Sample Results</h3>
+                <ul>
+                    <li>8 drones registered across 7 zones</li>
+                    <li>15 missions with varied statuses</li>
+                    <li>25 detections → 10 auto-generated alerts</li>
+                    <li>10 incident reports linked to alerts</li>
+                    <li>15 audit log entries tracking actions</li>
+                    <li>3 roles with 6 users (2 per role)</li>
+                    <li>All coordinates point to GIKI campus</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Seed Data Theme</h3>
+        <div class="highlight-box">
+            All data themed around <strong>GIKI campus, Topi, Swabi</strong> — zone names match real campus areas (Main Gate, Faculty Block, Hostel Area, Sports Complex, Research Labs, Admin Block, Tuc Area) with accurate GPS coordinates.
+        </div>
+    </div>
+
+    <!-- Slide 12: Conclusion -->
+    <div class="slide title-slide">
+        <h1>Thank You</h1>
+        <p class="subtitle">Drone Surveillance & Intelligence System</p>
+        <div class="meta">
+            <span>Muhammad Saim</span> — 2024453 — CYS<br>
+            CS-232 DBMS — Spring 2026<br><br>
+            GitHub: <span>github.com/m-sa1m</span><br>
+            Email: <span>u2024453@giki.edu.pk</span><br><br><br>
+            Instructor: <span>Sir Nabi</span>
+        </div>
+    </div>
+
+    <div class="slide-number" id="slideNum">1 / 12</div>
+    <div class="nav-hint">← → Arrow keys to navigate</div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const slideNum = document.getElementById('slideNum');
+        const progress = document.getElementById('progress');
+        let current = 0;
+
+        function showSlide(n) {
+            slides[current].classList.remove('active');
+            current = (n + slides.length) % slides.length;
+            slides[current].classList.add('active');
+            slideNum.textContent = `${current + 1} / ${slides.length}`;
+            progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') showSlide(current + 1);
+            if (e.key === 'ArrowLeft') showSlide(current - 1);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.clientX > window.innerWidth / 2) showSlide(current + 1);
+            else showSlide(current - 1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
